@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Game Canvas</title>
+    <style>
+        .none {
+            cursor: none;
+        }
+
+        body {
+            background-image: url("source.gif");
+            background-color: #cccccc;
+        }
+
+        #Pic {
+            width: 60px;
+            height: 41px;
+            position: absolute;
+            background-image: url("BalloonCut.gif");
+            top: 10px;
+            left: 10px;
+        }
+
+        #gun1 {
+            width: 67px;
+            height: 30px;
+            position: absolute;
+            background-image: url("gun2.gif");
+            top: 500px;
+            left: 100px;
+        }
+
+        #gun2 {
+            width: 74px;
+            height: 65px;
+            position: absolute;
+            background-image: url("gun1.gif");
+            top: 150px;
+            left: 700px;
+        }
+
+        #gun3 {
+            width: 53px;
+            height: 35px;
+            position: absolute;
+            background-image: url("gun.gif");
+            top: 300px;
+            left: 1200px;
+        }
+
+        #burst {
+            width: 64px;
+            height: 64px;
+            position: absolute;
+            background-image: url("abc.gif");
+            top: 10px;
+            left: 10px;
+        }
+
+        #ballBurst {
+            width: 64px;
+            height: 100px;
+            position: absolute;
+            background-image: url("resizeEx.gif");
+            top: 10px;
+            left: 10px;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .apply-shake {
+            animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+        }
+    </style>
+</head>
+
+<body class="none" width="1500" height="770">
+    <audio id="audio" autoplay src="sound.mp3">
+    </audio>
+    <audio id="explode" src="explode.mp3">
+    </audio>
+    <canvas id="c"></canvas>
+    <div id="Pic"></div>
+    <div id="gun2"></div>
+    <div id="gun1"></div>
+    <div id="gun3"></div>
+    <div id="burst"></div>
+    <div id="ballBurst"></div>
+    <script>
+        s = document.getElementById("audio");
+        function snd() {
+            s.play();
+        }
+        setInterval(snd, 100);
+
+
+        b = document.getElementById("burst");
+        b.style.display = "none";
+        a = document.getElementById("ballBurst");
+        a.style.display = "none";
+        document.getElementById('Pic').style.cursor = "none";
+        var c = document.querySelector("#c");
+
+
+        c.width = "1500";
+        c.height = "770";
+        var ctx = c.getContext("2d");
+        document.onmousemove = move;
+
+        function move(e) {
+            var newX = e.clientX;
+            var newY = e.clientY;
+            var cat = document.getElementById("Pic");
+            cat.style.left = newX + "px";
+            cat.style.top = newY + "px";
+        }
+
+        function draw() {
+            var x1 = 105;
+            var y1 = 502;
+            var x2 = 720;
+            var y2 = 170;
+            var x3 = 1225;
+            var y3 = 310;
+            var dx1 = 1;
+            var dy1 = 1;
+            var dx2 = 1;
+            var dy2 = 1;
+            var dx3 = 1;
+            var dy3 = 1;
+            var ballRadius1 = 7;
+            var ballRadius2 = 5;
+            var ballRadius3 = 6;
+            var ratio = 0;
+            var count = 1;
+            var SPEED1 = 2;
+            var SPEED2 = 2.5;
+            var SPEED3 = 3;
+            var temp = 0;
+            var flag1 = 0;
+            var flag2 = 0;
+            var flag3 = 0;
+            var score = 0;
+            //   s = document.getElementById("myAudio");
+
+            this.real = function () {
+                // s.play();
+                ctx.clearRect(0, 0, c.width, c.height);
+                //drawBall1
+                ctx.beginPath();
+                ctx.arc(x1, y1, ballRadius1, 0, Math.PI * 2);
+                ctx.strokeStyle = "yellow";
+                ctx.stroke();
+                ctx.closePath();
+
+                //drawBall2
+                ctx.beginPath();
+                ctx.arc(x2, y2, ballRadius2, 0, Math.PI * 2);
+                ctx.fillStyle = "red";
+                ctx.fill();
+                ctx.closePath();
+
+
+                //drawBall3
+                ctx.beginPath();
+                ctx.arc(x3, y3, ballRadius3, 0, Math.PI * 2);
+                ctx.fillStyle = "black";
+                ctx.fill();
+                ctx.closePath();
+
+                //follow1
+                dx1 = getXPos() - x1;
+                dy1 = getYPos() - y1;
+                var length = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                if (length) {
+                    dx1 /= length;
+                    dy1 /= length;
+                }
+
+                x1 += dx1 * SPEED1;
+                y1 += dy1 * SPEED1;
+
+                //follow2
+                dx2 = getXPos() - x2;
+                dy2 = getYPos() - y2;
+                var length = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                if (length) {
+                    dx2 /= length;
+                    dy2 /= length;
+                }
+                x2 += dx2 * SPEED2;
+                y2 += dy2 * SPEED2;
+
+                //follow3
+                dx3 = getXPos() - x3;
+                dy3 = getYPos() - y3;
+                var length = Math.sqrt(dx3 * dx3 + dy3 * dy3);
+                if (length) {
+                    dx3 /= length;
+                    dy3 /= length;
+                }
+                x3 += dx3 * SPEED3;
+                y3 += dy3 * SPEED3;
+
+
+                function getXPos() {
+                    var balloon = document.getElementById("Pic");
+                    var xp = balloon.offsetLeft;
+                    return xp;
+                }
+
+                function getYPos() {
+                    var balloon = document.getElementById("Pic");
+                    var yp = balloon.offsetTop;
+                    return yp;
+                }
+
+                if (count % 1000 == 0) {
+                    SPEED1 += 0.5;
+                    SPEED2 += 0.5;
+                    SPEED3 += 0.5;
+                    console.log(count);
+                }
+                first = document.getElementById("Pic");
+                gunOne = document.getElementById("gun1");
+                gunTwo = document.getElementById("gun2");
+                gunThree = document.getElementById("gun3");
+                function collide(first, gun) {
+                    if (first.offsetLeft < (gun.offsetLeft + gun.offsetWidth) - 10 &&
+                        (first.offsetLeft + first.offsetWidth) - 10 > gun.offsetLeft &&
+                        first.offsetTop < (gun.offsetTop + gun.offsetHeight) - 10 &&
+                        first.offsetTop + first.offsetHeight > gun.offsetTop) {
+                        b.style.left = first.offsetLeft + "px";
+                        b.style.top = first.offsetTop + "px";
+                        b.style.display = "block";
+                        s.pause();
+                        alert("Game Over\nScore: " + score);
+                    }
+
+                }
+                collide(first, gunOne);
+                collide(first, gunTwo);
+                collide(first, gunThree);
+
+                function collideBall(x, y, radius, gun, s) {
+                    var name;
+                    var op = document.getElementById("explode");
+                    if (x < gun.offsetLeft + gun.offsetWidth &&
+                        x + radius > gun.offsetLeft &&
+                        y < gun.offsetTop + gun.offsetHeight &&
+                        y + radius > gun.offsetTop &&
+                        count > 250) {
+                        a.style.left = gun.offsetLeft + "px";
+                        a.style.top = (gun.offsetTop - 30) + "px";
+                        //   a.style.display = "block";
+                        //  temp = count;
+                        if (gun == document.getElementById("gun1")) {
+                            flag1++;
+                            gun.classList.add("apply-shake");
+                            gun.addEventListener("animationend", (e) => {
+                                gun.classList.remove("apply-shake");
+                            });
+                        }
+                        else if (gun == document.getElementById("gun2")) {
+                            flag2++;
+                            gun.classList.add("apply-shake");
+                            gun.addEventListener("animationend", (e) => {
+                                gun.classList.remove("apply-shake");
+                            });
+                        }
+                        else if (gun == document.getElementById("gun3")) {
+                            flag3++;
+                            gun.classList.add("apply-shake");
+                            gun.addEventListener("animationend", (e) => {
+                                gun.classList.remove("apply-shake");
+                            });
+                        }
+                        else;
+                        if (flag1 == 100) {
+                            a.style.display = "block";
+                            temp = count;
+                            gun.style.display = "none";
+                            flag1 = 0;
+                            score += 100;
+                            op.play();
+                        }
+                        else if (flag2 == 300) {
+                            a.style.display = "block";
+                            temp = count;
+                            gun.style.display = "none";
+                            flag2 = 0;
+                            score += 300;
+                            op.play();
+                        }
+                        else if (flag3 == 50) {
+                            a.style.display = "block";
+                            temp = count;
+                            gun.style.display = "none";
+                            flag3 = 0;
+                            score += 50;
+                            op.play();
+                        }
+                        else;
+                    }
+                    if (count > temp + 250 && count > 100) {
+                        a.style.display = "none";
+
+                    }
+                }
+                collideBall(x1, y1, ballRadius1, gunOne, 1);
+                collideBall(x1, y1, ballRadius1, gunTwo, 2);
+                collideBall(x1, y1, ballRadius1, gunThree, 3);
+                collideBall(x2, y2, ballRadius2, gunOne, 1);
+                collideBall(x2, y2, ballRadius2, gunTwo, 2);
+                collideBall(x2, y2, ballRadius2, gunThree, 3);
+                collideBall(x3, y3, ballRadius3, gunOne, 1);
+                collideBall(x3, y3, ballRadius3, gunTwo, 2);
+                collideBall(x3, y3, ballRadius3, gunThree, 3);
+
+                function collideBalloon(x, y, radius, blon) {
+                    if (x < (blon.offsetLeft + blon.offsetWidth) - 20 &&
+                        x + radius > blon.offsetLeft &&
+                        y < (blon.offsetTop + blon.offsetHeight) - 20 &&
+                        y + radius > blon.offsetTop) {
+                        b.style.left = blon.offsetLeft + "px";
+                        b.style.top = blon.offsetTop + "px";
+                        b.style.display = "block";
+                        first.style.display = "none";
+                        s.pause();
+                        alert("Game Over\nScore: " + score);
+
+                    }
+                }
+                collideBalloon(x1, y1, ballRadius1, first);
+                collideBalloon(x2, y2, ballRadius2, first);
+                collideBalloon(x3, y3, ballRadius3, first);
+                count++;
+                if (score == 450) {
+                    alert("You Won\nScore: " + score);
+                }
+                //requestAnimationFrame(obj[i].real);
+
+            };
+            // draw.real = real;
+        }
+        /*     var i = 0; var obj = [];
+                  function s(){
+                      for(; i < 10; i++){
+                          obj[i] = new draw();
+                          obj[i].real();
+                          break;
+                      }
+                  }
+                  interval = setInterval(s,5000);*/
+        obj = new draw();
+        function timer() {
+            interval = setInterval(obj.real, 7);
+        }
+        myVar = setTimeout(timer, 3000);
+    </script>
+</body>
+
+</html>
