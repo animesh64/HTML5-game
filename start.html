@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Game Canvas</title>
-    <iframe width="0" height="0" src="sound.mp3" frameborder="0" allowfullscreen></iframe>
+    <iframe width="0" height="0" frameborder="0" allowfullscreen></iframe>
 </head>
 <style>
     html {
@@ -13,7 +13,7 @@
 
     body {
         height: 100%;
-        background: url(blur.jpg) center center no-repeat;
+        background: url(assets/blur.jpg) center center no-repeat;
         background-size: cover;
         display: flex;
         justify-content: center;
@@ -59,20 +59,21 @@
         left: 160px;
     }
 </style>
+
 <body>
-    <audio id="audio" autoplay src="sound.mp3">
+    <audio id="audio" autoplay src="assets\sound.mp3">
     </audio>
     <div id="brand">
-        <img src="L.png">
+        <img src="assets\L.png">
         <a href="game.html">PRESS START</a>
     </div>
     <script>
 
         s = document.getElementById("audio");
-        function a() {
+        function playBackgroundMusic() {
             s.play();
         }
-        i = setInterval(a, 100);
+        setInterval(playBackgroundMusic, 100);
         let start = document.querySelector('#brand');
         let ex = 10;
         function swing(element) {
